@@ -8,9 +8,9 @@
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
   "theme": {
-    "mode": "light",
+    "mode": "dark",
     "light": "GitHub Light",
-    "dark": "Flexoki Dark",
+    "dark": "Catppuccin Mocha - No Italics",
   },
 
   "wrap_guides": [80],
@@ -157,7 +157,7 @@
     "trust_all_worktrees": true,
   },
   "icon_theme": {
-    "mode": "light",
+    "mode": "dark",
     "light": "Material Icon Theme",
     "dark": "Catppuccin Frappé",
   },
