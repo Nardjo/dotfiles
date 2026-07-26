@@ -82,14 +82,43 @@ def pane_key_to_tty():
     return out
 
 
+def encode_path(path):
+    """Claude Code's project-directory encoding: every non-alphanumeric char
+    becomes a dash. Same rule as ~/.claude/bin/claude-last-session, which was
+    verified against real project dirs (_learning -> -learning, .claude ->
+    --claude), so underscores and dots are both covered."""
+    return re.sub(r"[^a-zA-Z0-9]", "-", path)
+
+
+def inner_session_id(transcript):
+    """A resumed session writes a continuation file whose filename uuid differs
+    from the sessionId inside it (anthropics/claude-code#30606); --resume needs
+    the inner one."""
+    try:
+        with open(transcript, encoding="utf-8", errors="replace") as fh:
+            for line in fh:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    rec = json.loads(line)
+                except ValueError:
+                    continue
+                if rec.get("sessionId"):
+                    return rec["sessionId"]
+    except OSError:
+        pass
+    return None
+
+
 def resolve_prefix(cwd, prefix):
     """Expand a truncated id from the pane title into the full one."""
-    # Claude Code flattens a path into a directory name by turning both slashes
-    # and dots into dashes: /Users/me/.claude -> -Users-me--claude
-    encoded = cwd.replace("/", "-").replace(".", "-")
-    hits = glob.glob(os.path.join(PROJECTS_DIR, encoded, prefix + "*.jsonl"))
+    hits = glob.glob(os.path.join(PROJECTS_DIR, encode_path(cwd), prefix + "*.jsonl"))
     if len(hits) != 1:
         return None
+    inner = inner_session_id(hits[0])
+    if inner and re.fullmatch(UUID, inner):
+        return inner
     name = os.path.basename(hits[0])[: -len(".jsonl")]
     return name if re.fullmatch(UUID, name) else None
 
