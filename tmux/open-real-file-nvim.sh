@@ -78,7 +78,9 @@ selected="$(cat "$outfile")"
 read -r nvim_window_id nvim_pane_id <<<"$(find_nvim_target)"
 
 if [[ -n "$nvim_pane_id" ]]; then
-  nvim_command="$(to_tabedit_strings "$selected")"
+  # the plugin builds tabedit commands, which open tabpages the bufferline never
+  # draws: invisible files. Rewritten here rather than in the plugin, which updates.
+  nvim_command="$(to_tabedit_strings "$selected" | sed 's/tabedit /edit /g')"
   tmux send-keys -t "$nvim_pane_id" Escape ":$nvim_command" Enter
   tmux select-window -t "$nvim_window_id"
   tmux select-pane -t "$nvim_pane_id"

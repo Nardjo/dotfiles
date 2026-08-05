@@ -132,6 +132,27 @@ vim.keymap.set({ "n", "i" }, "<C-w>", function()
   Snacks.bufdelete()
 end, { desc = "Close buffer" })
 
+-- Cycle the tabs in the order the bufferline draws them. LazyVim's [b/]b need
+-- AltGr on an AZERTY keyboard; Tab costs the forward jump (<C-i>), <C-o> stays.
+-- Inert outside a real file, otherwise Tab cycled the buffer under the Snacks
+-- explorer and tore it down. Expr, since a mapping cannot close a window.
+local function cycler(commande)
+  return function()
+    return vim.bo.buflisted and ("<cmd>" .. commande .. "<cr>") or ""
+  end
+end
+
+vim.keymap.set("n", "<Tab>", cycler("BufferLineCycleNext"), {
+  expr = true,
+  replace_keycodes = true,
+  desc = "Next buffer",
+})
+vim.keymap.set("n", "<S-Tab>", cycler("BufferLineCyclePrev"), {
+  expr = true,
+  replace_keycodes = true,
+  desc = "Previous buffer",
+})
+
 -- LazyVim wires these to the "<C-W>x" strings with remap = true, so they run the
 -- <C-w> map above instead of the window command. Direct commands dodge the detour.
 vim.keymap.set("n", "<leader>wd", "<cmd>close<cr>", { desc = "Delete Window" })
