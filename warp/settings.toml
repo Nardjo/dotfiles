@@ -20,6 +20,7 @@ should_render_use_agent_toolbar_for_user_commands = false
 should_show_oz_updates_in_zero_state = false
 show_conversation_history = false
 show_agent_notifications = false
+agent_attribution_enabled = false
 
 [agents.warp_agent.active_ai]
 enabled = true
