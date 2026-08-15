@@ -1,0 +1,19 @@
+id = "mirko.tab-autoname"
+name = "Tab Autoname"
+version = "0.1.0"
+min_herdr_version = "0.7.0"
+description = "Name a new tab after its git branch, or its directory outside a worktree."
+platforms = ["macos", "linux"]
+
+[[startup]]
+command = ["python3", "autoname.py", "--all"]
+
+[[events]]
+on = "tab.created"
+command = ["python3", "autoname.py"]
+
+[[actions]]
+id = "rename-current"
+title = "Tab Autoname: rename this tab"
+contexts = ["tab", "pane", "workspace"]
+command = ["python3", "autoname.py", "--current"]

@@ -8,11 +8,20 @@ enabled = false
 
 # what theme-apply.sh and the client-dark-theme hooks do under tmux: the
 # palette follows the macOS appearance Ghostty reports, with no poller
+# tokyo-night is the palette the herdr-sidebar screenshots are shot in: darker
+# ground, brighter blues on the entries, so the sidebar reads at a glance. The
+# tmux bar stays Catppuccin; the two only meet when you switch multiplexer.
 [theme]
-name = "catppuccin"
+name = "tokyo-night"
 auto_switch = true
-dark_name = "catppuccin"
-light_name = "catppuccin-latte"
+dark_name = "tokyo-night"
+light_name = "tokyo-night-day"
+
+# No override on purpose: the sidebar is transparent by design and only paints
+# highlighted rows, so no background token separates the spaces and agents
+# sections (herdr discussion #1952, prototyped, unreleased, absent from the
+# preview channel too). Hardcoded Catppuccin hexes on top of another theme only
+# produced a mismatch. Judge the theme on its own palette first.
 
 # the @resurrect-capture-pane-contents equivalent: scrollback comes back after
 # a server restart. Pane output lands in session-history.json, so treat that
@@ -187,9 +196,79 @@ description = "pane right"
 [ui.toast]
 delivery = "herdr"
 
+# VS Code style file tree and source control, in a docked pane
+[[keys.command]]
+key = "prefix+shift+b"
+type = "plugin_action"
+command = "herdr-sidebar.open-sidebar"
+description = "file tree and git panel"
+
+# seven days of agent state: who worked, when, how long blocked
+[[keys.command]]
+key = "prefix+shift+i"
+type = "plugin_action"
+command = "herdr-insight.open-timeline-down"
+description = "agent timeline"
+
+# open the focused branch's pull request in the browser
+[[keys.command]]
+key = "prefix+shift+u"
+type = "plugin_action"
+command = "gh-pr.open-pr"
+description = "open this branch's PR"
+
+# source control on its own, without the file tree
+[[keys.command]]
+key = "prefix+v"
+type = "plugin_action"
+command = "herdr-sidebar.open-git"
+description = "source control panel"
+
+# Same two panels, in a tab of their own instead of a split. Use these when the
+# current tab already holds an agent and you would rather not shrink it.
+# `plugin pane open` overrides the manifest placement, so no plugin is patched.
+[[keys.command]]
+key = "prefix+ctrl+b"
+type = "shell"
+command = "~/.config/herdr/bin/sidebar-tab.sh"
+description = "file tree and git panel, in a named tab"
+
+[[keys.command]]
+key = "prefix+ctrl+o"
+type = "shell"
+command = "herdr plugin pane open --plugin herdr-navigator --entrypoint picker-side --placement tab"
+description = "jump to anything, in a tab"
+
+# back to the space you came from, the Alt+Tab reflex
+[[keys.command]]
+key = "prefix+u"
+type = "plugin_action"
+command = "herdr-navigator.jump-back"
+description = "back to the previous space"
+
+# name this tab after its directory, or its branch inside a worktree
+[[keys.command]]
+key = "prefix+y"
+type = "plugin_action"
+command = "mirko.tab-autoname.rename-current"
+description = "name this tab after its folder"
+
+# drop a manual name so Smart Rename owns this tab again
+[[keys.command]]
+key = "prefix+shift+y"
+type = "plugin_action"
+command = "tab-smart-rename.reset-tab"
+description = "hand this tab back to Smart Rename"
+
 [ui]
 show_agent_labels_on_pane_borders = true
 # a new tab opens straight away; the Smart Rename worker names it from the
 # work happening inside, which beats naming it before anything has run
 prompt_new_tab_name = false
 agent_panel_sort = "spaces"
+
+# the stock layout, plus the two tokens the new plugins write into. No fg
+# anywhere: a colour override would replace the semantic colours, and the one
+# marking the focused entry with them.
+[ui.sidebar.agents]
+rows = [["state_icon", "workspace", "tab", "$pr"], ["agent", "state_text"]]
