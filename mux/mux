@@ -1,0 +1,45 @@
+#!/bin/sh
+# Which multiplexer Ghostty runs, and how to swap it inside the window you are
+# already in. Ghostty's `command` runs this with no argument; `mux switch`
+# flips the choice and ends the running client, so the loop below starts the
+# other one in the same window. Neither server is stopped: tmux keeps its
+# sessions, herdr keeps its workspaces.
+#
+# ponytail: switch hits every window at once. The hotkey fires from outside any
+# terminal, so there is no focused window to single out. Per-window switching
+# would need the multiplexer's own keybinding instead of a global shortcut.
+
+STATE="$HOME/.config/mux.state"
+TMUX_BIN=/opt/homebrew/bin/tmux
+HERDR_BIN=/opt/homebrew/bin/herdr
+
+current() {
+  [ -r "$STATE" ] && cat "$STATE" || echo tmux
+}
+
+case "${1:-start}" in
+  start)
+    # Leaving the client on purpose (exit, detach) closes the window as before;
+    # only a state change while it ran means "switch", and loops once more.
+    while :; do
+      want="$(current)"
+      case "$want" in
+        herdr) "$HERDR_BIN" ;;
+        *) "$TMUX_BIN" new-session -A -s main ;;
+      esac
+      [ "$(current)" != "$want" ] || break
+    done
+    ;;
+  switch)
+    if [ "$(current)" = herdr ]; then echo tmux > "$STATE"; else echo herdr > "$STATE"; fi
+    "$TMUX_BIN" list-clients -F '#{client_name}' 2>/dev/null | while read -r client; do
+      "$TMUX_BIN" detach-client -t "$client" 2>/dev/null
+    done
+    # the client's argv is exactly the binary path; the server's is not
+    pkill -x -f "$HERDR_BIN" 2>/dev/null
+    exit 0
+    ;;
+  *)
+    current
+    ;;
+esac

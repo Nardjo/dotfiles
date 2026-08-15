@@ -14,10 +14,11 @@ is_already_linked() {
   [[ -L "$target" && "$(readlink "$target")" == "$source" ]]
 }
 
-back_up() {
-  local target="$1"
-  mv "$target" "$target.backup-$TIMESTAMP"
-  echo "backup   $target.backup-$TIMESTAMP"
+# A target that exists without being a link is the machine's own config, and it
+# may hold things this repo does not carry: tmux plugins, yazi bookmarks,
+# ghostty themes. Adopt it deliberately, never behind your back.
+skip() {
+  echo "skip     $1 exists and is not a link - move it aside to adopt it"
 }
 
 link() {
@@ -35,7 +36,10 @@ install_entry() {
     return
   fi
 
-  [[ -e "$target" || -L "$target" ]] && back_up "$target"
+  if [[ -e "$target" || -L "$target" ]]; then
+    skip "$target"
+    return
+  fi
   link "$source" "$target"
 }
 

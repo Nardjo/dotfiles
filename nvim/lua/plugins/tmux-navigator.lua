@@ -20,4 +20,17 @@ return {
       vim.g.tmux_navigator_no_mappings = 1
     end,
   },
+  -- The same motions under herdr, which has no tmux pane. Loaded only inside a
+  -- herdr pane, so nothing changes when Neovim runs under tmux.
+  {
+    "willfish/herdr-navigator.nvim",
+    cond = function()
+      return vim.env.HERDR_PANE_ID ~= nil
+    end,
+    config = function()
+      require("herdr-navigator").setup({
+        mappings = { left = "<M-h>", down = "<M-j>", up = "<M-k>", right = "<M-l>" },
+      })
+    end,
+  },
 }

@@ -1,0 +1,169 @@
+#!/usr/bin/env bash
+# Runs a command in a visible pane of Mirko's terminal instead of the agent's
+# hidden shell, then relays the captured output and exit code back to the
+# caller. Supports both multiplexers: tmux and herdr. Outside either one, or
+# when no pane can be obtained, it runs the command locally and says so.
+#
+# Wired from ~/.claude/hooks/pane-route.cjs and from the OMP extension
+# ~/.omp/agent/extensions/pane-run.ts. Usage: pane-run <cwd> <command>
+
+set -uo pipefail
+
+CWD="${1:-$PWD}"
+CMD="${2:-}"
+[ -n "$CMD" ] || { echo "usage: pane-run <cwd> <command>" >&2; exit 2; }
+
+JOBS="$HOME/.claude/.pane-run"
+mkdir -p "$JOBS"
+find "$JOBS" -type f -mtime +1 -delete 2>/dev/null
+
+run_local() {
+  echo "[pane-run] $1, local execution"
+  cd "$CWD" || exit 1
+  eval "$CMD"
+  exit $?
+}
+
+# ---------------------------------------------------------------- tmux backend
+
+tmux_target() {
+  local panes memo remembered id cmd anchor dir target=""
+  panes=$(tmux list-panes -t "$TMUX_PANE" -F '#{pane_id} #{pane_current_command}' 2>/dev/null)
+  memo="$JOBS/tmux-$(tmux display-message -p -t "$TMUX_PANE" '#{window_id}' 2>/dev/null)"
+
+  # Stick to the pane already chosen for this window. Probing "is it at a shell
+  # prompt" on every call spawns a new pane whenever two commands follow each
+  # other closely, because the previous one still shows as `node` or `bun`.
+  if [ -f "$memo" ]; then
+    remembered=$(cat "$memo")
+    case "$panes" in *"$remembered "*) target="$remembered" ;; esac
+  fi
+
+  if [ -z "$target" ]; then
+    while read -r id cmd; do
+      [ "$id" = "$TMUX_PANE" ] && continue
+      case "$cmd" in zsh | bash | fish | sh) target="$id"; break ;; esac
+    done <<< "$panes"
+  fi
+
+  # One pane is enough. The first one goes to the RIGHT, never to the bottom of
+  # Mirko's window. If it is busy and a second is genuinely needed, stack it
+  # under that right-hand pane rather than shrinking his window again.
+  if [ -z "$target" ]; then
+    anchor=$(tmux list-panes -t "$TMUX_PANE" -F '#{pane_left} #{pane_id}' 2>/dev/null |
+      sort -rn | awk -v me="$TMUX_PANE" '$2 != me { print $2; exit }')
+    if [ -n "$anchor" ]; then dir=-v; else anchor="$TMUX_PANE"; dir=-h; fi
+    target=$(tmux split-window "$dir" -d -P -F '#{pane_id}' -t "$anchor" -c "$CWD" 2>/dev/null)
+  fi
+
+  [ -n "$target" ] || return 1
+  echo "$target" > "$memo"
+  printf '%s' "$target"
+}
+
+tmux_send() {
+  # Leading space so the job line stays out of the shell history under
+  # HIST_IGNORE_SPACE; the pane still shows the real command, printed by the job.
+  tmux send-keys -t "$1" " bash '$2'" Enter 2>/dev/null
+}
+
+# --------------------------------------------------------------- herdr backend
+
+# A herdr pane is usable when its foreground process is a shell. Plugin overlays
+# answer `pane_not_found` here, which excludes them without a special case.
+herdr_is_shell() {
+  herdr pane process-info --pane "$1" 2>/dev/null |
+    jq -e -r '.result.process_info.foreground_processes[0].name // ""' 2>/dev/null |
+    grep -qE '^(zsh|bash|fish|sh|-zsh|-bash)$'
+}
+
+herdr_target() {
+  local memo remembered target="" candidates id
+  memo="$JOBS/herdr-${HERDR_TAB_ID:-$HERDR_PANE_ID}"
+
+  if [ -f "$memo" ]; then
+    remembered=$(cat "$memo")
+    if [ "$remembered" != "$HERDR_PANE_ID" ] && herdr_is_shell "$remembered"; then
+      target="$remembered"
+    fi
+  fi
+
+  if [ -z "$target" ]; then
+    candidates=$(herdr pane list 2>/dev/null |
+      jq -r --arg tab "${HERDR_TAB_ID:-}" --arg me "$HERDR_PANE_ID" \
+        '.result.panes[] | select(.tab_id == $tab and .pane_id != $me) | .pane_id' 2>/dev/null)
+    for id in $candidates; do
+      if herdr_is_shell "$id"; then target="$id"; break; fi
+    done
+  fi
+
+  # Same rule as tmux: the pane goes to the RIGHT of the agent, never below.
+  if [ -z "$target" ]; then
+    target=$(herdr pane split "$HERDR_PANE_ID" --direction right --cwd "$CWD" 2>/dev/null |
+      jq -r '.result.pane.pane_id // empty' 2>/dev/null)
+  fi
+
+  [ -n "$target" ] || return 1
+  echo "$target" > "$memo"
+  printf '%s' "$target"
+}
+
+herdr_send() {
+  # Leading space, like the tmux path: keeps the job line out of the shell
+  # history under HIST_IGNORE_SPACE. The pane still prints the real command.
+  herdr pane run "$1" " bash '$2'" >/dev/null 2>&1
+}
+
+# ------------------------------------------------------------------- dispatch
+
+backend=""
+if [ -n "${TMUX:-}" ] && [ -n "${TMUX_PANE:-}" ] && command -v tmux >/dev/null 2>&1; then
+  backend="tmux"
+elif [ "${HERDR_ENV:-}" = "1" ] && [ -n "${HERDR_PANE_ID:-}" ] && command -v herdr >/dev/null 2>&1; then
+  backend="herdr"
+else
+  run_local "no tmux and no herdr"
+fi
+
+command -v jq >/dev/null 2>&1 || [ "$backend" = "tmux" ] || run_local "jq missing, cannot read herdr panes"
+
+target=$("${backend}_target") || run_local "no $backend pane available"
+
+id="$$-${RANDOM}"
+job="$JOBS/$id.sh"
+out="$JOBS/$id.out"
+rc="$JOBS/$id.rc"
+
+# The echoed command line stays outside the tee, so it shows in the pane
+# without polluting the output handed back to the agent.
+# The code is read from PIPESTATUS after the pipeline, not from an `echo $?`
+# inside it: a command that calls `exit` itself kills that subshell, and the
+# inner echo would never run, leaving the caller waiting for a file that never
+# lands. `mv` runs once the pipe has finished, so `rc` appearing proves `tee`
+# has flushed everything into `out`.
+{
+  printf 'cd %q || exit 1\n' "$CWD"
+  printf 'printf "\\033[1;36m$ %%s\\033[0m\\n" %q\n' "$CMD"
+  printf '{ %s; } 2>&1 | tee %q\n' "$CMD" "$out"
+  printf 'echo "${PIPESTATUS[0]}" > %q.tmp\n' "$rc"
+  printf 'mv %q.tmp %q\n' "$rc" "$rc"
+} > "$job"
+
+"${backend}_send" "$target" "$job" || run_local "sending to the $backend pane failed"
+
+limit=18000 # 1800s at 100ms per tick
+ticks=0
+while [ ! -f "$rc" ]; do
+  ticks=$((ticks + 1))
+  if [ "$ticks" -gt "$limit" ]; then
+    cat "$out" 2>/dev/null
+    echo "[pane-run] timed out after 1800s, still running in $backend pane $target" >&2
+    exit 124
+  fi
+  sleep 0.1
+done
+
+cat "$out"
+code=$(cat "$rc")
+rm -f "$job" "$out" "$rc"
+exit "${code:-0}"

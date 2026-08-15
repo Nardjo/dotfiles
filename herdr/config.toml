@@ -1,0 +1,195 @@
+# Herdr, mapped onto the tmux shortcuts in ~/.config/tmux/tmux.conf.
+# Descriptions stay in English: they show up in the prefix+? help panel.
+
+onboarding = false
+
+[ui.sound]
+enabled = false
+
+# what theme-apply.sh and the client-dark-theme hooks do under tmux: the
+# palette follows the macOS appearance Ghostty reports, with no poller
+[theme]
+name = "catppuccin"
+auto_switch = true
+dark_name = "catppuccin"
+light_name = "catppuccin-latte"
+
+# the @resurrect-capture-pane-contents equivalent: scrollback comes back after
+# a server restart. Pane output lands in session-history.json, so treat that
+# file like terminal history.
+[experimental]
+pane_history = true
+
+[keys]
+prefix = "ctrl+space"
+
+# splits and panes: same keys as tmux
+split_vertical = "prefix+|"
+split_horizontal = "prefix+minus"
+new_tab = "prefix+c"
+focus_pane_left = "prefix+h"
+focus_pane_down = "prefix+j"
+focus_pane_up = "prefix+k"
+focus_pane_right = "prefix+l"
+close_pane = "prefix+x"
+close_tab = "prefix+shift+x"
+resize_mode = "prefix+r"
+zoom = "prefix+z"
+
+# prefix+s opens the picker, like choose-tree under tmux; settings moves aside
+goto = "prefix+s"
+workspace_picker = "prefix+w"
+settings = "prefix+shift+s"
+
+# prefix+e is the agent sidebar, like tmux-agent-sidebar
+toggle_sidebar = "prefix+e"
+edit_scrollback = "prefix+shift+e"
+
+next_tab = "prefix+n"
+previous_tab = "prefix+p"
+detach = "prefix+q"
+
+# tmux sessions become herdr workspaces. The ctrl+alt chords are direct, no
+# prefix: that family is the one terminals and macOS leave alone, and it also
+# works over SSH where Ghostty is not there to send the prefix for you.
+next_workspace = ["prefix+)", "ctrl+alt+j"]
+previous_workspace = ["prefix+(", "ctrl+alt+k"]
+
+# what agent-jump-next.sh did by hand
+next_agent = "prefix+g"
+# straight to the right agent instead of cycling
+focus_agent = "prefix+alt+1..9"
+switch_workspace = "prefix+shift+1..9"
+
+# copy mode: scrollback search lives inside it (/ then n), what prefix+C-f
+# does under tmux
+copy_mode = "prefix+["
+
+# a worktree becomes a workspace grouped under its parent repo
+new_worktree = "prefix+shift+g"
+open_worktree = "prefix+shift+o"
+
+# the tmux display-popup floating shell (prefix+a)
+[[keys.command]]
+key = "prefix+a"
+type = "popup"
+command = "exec \"${SHELL:-sh}\""
+description = "floating shell"
+width = "80%"
+height = "70%"
+
+# one fuzzy list over workspaces, agents, projects, sessions, remotes and
+# directories. It covers what sessionizer.sh, sesh-picker.sh, choose-tree and
+# agent-jump-next.sh each did separately under tmux.
+[[keys.command]]
+key = "prefix+o"
+type = "plugin_action"
+# open-side, not open: the overlay placement collapsed to a two-row pane that
+# swallowed the focus and looked like a freeze. A split cannot do that.
+command = "herdr-navigator.open-side"
+description = "jump to anything"
+
+# resize without entering resize mode
+[[keys.command]]
+key = "prefix+shift+h"
+type = "shell"
+command = "herdr pane resize --direction left"
+description = "grow pane left"
+
+[[keys.command]]
+key = "prefix+shift+j"
+type = "shell"
+command = "herdr pane resize --direction down"
+description = "grow pane down"
+
+[[keys.command]]
+key = "prefix+shift+k"
+type = "shell"
+command = "herdr pane resize --direction up"
+description = "grow pane up"
+
+[[keys.command]]
+key = "prefix+shift+l"
+type = "shell"
+command = "herdr pane resize --direction right"
+description = "grow pane right"
+
+# --- plugins ---
+
+# herdr-plus: one TOML file brings up a whole workspace, tabs and startup
+# commands included. sessionizer.sh, declarative.
+[[keys.command]]
+key = "prefix+m"
+type = "plugin_action"
+command = "cloudmanic.herdr-plus.projects"
+description = "open project layout"
+
+[[keys.command]]
+key = "prefix+shift+m"
+type = "plugin_action"
+command = "cloudmanic.herdr-plus.quick-actions"
+description = "quick actions"
+
+# git-aware viewer: diff when the file changed, rendered markdown, syntax
+# highlighting otherwise. It delegates to delta, bat and glow.
+[[keys.command]]
+key = "prefix+f"
+type = "plugin_action"
+command = "herdr-file-viewer.open-file-viewer"
+description = "file viewer"
+
+[[keys.command]]
+key = "prefix+shift+f"
+type = "plugin_action"
+command = "herdr-file-viewer.open-file-viewer-tab"
+description = "file viewer in a tab"
+
+# tab name taken from the task at hand, not from the directory
+[[keys.command]]
+key = "prefix+t"
+type = "plugin_action"
+command = "tab-smart-rename.rename-now"
+description = "rename this tab"
+
+[[keys.command]]
+key = "prefix+alt+t"
+type = "plugin_action"
+command = "tab-smart-rename.rename-all"
+description = "rename every tab"
+
+# Option+hjkl crosses Neovim splits and panes, like vim-tmux-navigator under
+# tmux. Herdr has no `if-shell` on the pane process, so the plugin is what
+# decides between forwarding the key to Neovim and moving the focus.
+[[keys.command]]
+key = "alt+h"
+type = "plugin_action"
+command = "willfish.herdr-navigator.left"
+description = "pane left"
+
+[[keys.command]]
+key = "alt+j"
+type = "plugin_action"
+command = "willfish.herdr-navigator.down"
+description = "pane down"
+
+[[keys.command]]
+key = "alt+k"
+type = "plugin_action"
+command = "willfish.herdr-navigator.up"
+description = "pane up"
+
+[[keys.command]]
+key = "alt+l"
+type = "plugin_action"
+command = "willfish.herdr-navigator.right"
+description = "pane right"
+
+[ui.toast]
+delivery = "herdr"
+
+[ui]
+show_agent_labels_on_pane_borders = true
+# a new tab opens straight away; the Smart Rename worker names it from the
+# work happening inside, which beats naming it before anything has run
+prompt_new_tab_name = false
+agent_panel_sort = "spaces"

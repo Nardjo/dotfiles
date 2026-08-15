@@ -33,9 +33,9 @@ custom-shader-animation = false
 confirm-close-surface = false
 window-save-state = always
 
-# via a login shell: otherwise the tmux server inherits macOS apps' minimal
-# PATH (without /opt/homebrew/bin) and plugin scripts fail with 127
-command = /bin/zsh -lc "exec /opt/homebrew/bin/tmux new-session -A -s main"
+# via a login shell: otherwise the server inherits macOS apps' minimal PATH
+# (without /opt/homebrew/bin) and plugin scripts fail with 127
+command = /bin/zsh -lc "exec /Users/mirkobozzetto/.config/mux"
 
 # tmux, Ctrl+Space prefix (NUL byte): Cmd shortcuts send it for you,
 # you never type the prefix yourself
