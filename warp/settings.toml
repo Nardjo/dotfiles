@@ -49,13 +49,44 @@ right = ["settings"]
 agent_mode_coding_permissions = "always_allow_reading"
 agent_mode_execute_readonly_commands = true
 
+[agents.execution_profiles]
+
+[agents.execution_profiles.default]
+apply_code_diffs = "always_allow"
+ask_user_question = "always_ask"
+autosync_plans_to_warp_drive = true
+command_allowlist = []
+command_denylist = [
+  'bash(\s.*)?',
+  'fish(\s.*)?',
+  'pwsh(\s.*)?',
+  'sh(\s.*)?',
+  'zsh(\s.*)?',
+  'curl(\s.*)?',
+  'eval(\s.*)?',
+  'source(\s.*)?',
+  'rm(\s.*)?',
+  'wget(\s.*)?',
+]
+computer_use = "always_ask"
+directory_allowlist = []
+execute_commands = "always_ask"
+mcp_allowlist = []
+mcp_denylist = []
+mcp_permissions = "always_ask"
+name = "Default"
+read_files = "always_allow"
+run_agents = "always_ask"
+web_search_enabled = true
+write_to_pty = "always_allow"
+
 [appearance]
 spacing = "compact"
 
 [appearance.window]
 override_blur = 25
 open_windows_at_custom_size = false
-zoom_level = 80
+zoom_level = 110
 override_opacity = 78
 
 [appearance.text]
