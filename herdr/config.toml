@@ -90,12 +90,14 @@ height = "70%"
 # one fuzzy list over workspaces, agents, projects, sessions, remotes and
 # directories. It covers what sessionizer.sh, sesh-picker.sh, choose-tree and
 # agent-jump-next.sh each did separately under tmux.
+# A popup, not the manifest's overlay: overlay collapsed to a two-row pane that
+# swallowed the focus and looked like a freeze. A popup is not a herdr pane, so
+# it gets no HERDR_PANE_ID, but Navigator finds its way through
+# HERDR_ACTIVE_PANE_ID. `open-side` is still there if this ever misbehaves.
 [[keys.command]]
 key = "prefix+o"
-type = "plugin_action"
-# open-side, not open: the overlay placement collapsed to a two-row pane that
-# swallowed the focus and looked like a freeze. A split cannot do that.
-command = "herdr-navigator.open-side"
+type = "shell"
+command = "herdr plugin pane open --plugin herdr-navigator --entrypoint picker --placement popup --width 97% --height 97%"
 description = "jump to anything"
 
 # resize without entering resize mode
