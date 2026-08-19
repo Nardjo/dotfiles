@@ -7,7 +7,7 @@
   <key>ProgramArguments</key>
   <array>
     <string>/usr/bin/python3</string>
-    <string>/Users/mirkobozzetto/.config/herdr/agent-auto-jump.py</string>
+    <string>/Users/jordanbastin/.config/herdr/agent-auto-jump.py</string>
   </array>
   <key>EnvironmentVariables</key>
   <dict>
@@ -21,6 +21,6 @@
   <key>ThrottleInterval</key>
   <integer>5</integer>
   <key>StandardErrorPath</key>
-  <string>/Users/mirkobozzetto/.config/herdr/agent-auto-jump.err</string>
+  <string>/Users/jordanbastin/.config/herdr/agent-auto-jump.err</string>
 </dict>
 </plist>

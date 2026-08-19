@@ -30,7 +30,8 @@ light_name = "tokyo-night-day"
 pane_history = true
 
 [keys]
-prefix = "ctrl+space"
+# Ctrl+B, not Ctrl+Space: Grok Build uses Ctrl+Space for voice dictation.
+prefix = "ctrl+b"
 
 # splits and panes: same keys as tmux
 split_vertical = "prefix+|"

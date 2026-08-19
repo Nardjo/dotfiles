@@ -4,7 +4,8 @@
 # two themes: Ghostty follows the macOS appearance and, through mode 2031,
 # tells tmux and Neovim to switch with it.
 theme = light:Catppuccin Latte,dark:Catppuccin Mocha
-font-family = FiraCode Nerd Font
+font-family = MesloLGL Nerd Font
+font-size = 16
 font-feature = calt
 font-feature = liga
 # left only: right Option keeps macOS composition, otherwise AZERTY dead
@@ -30,67 +31,50 @@ custom-shader = shaders/cursor_tail.glsl
 # false: the shader only receives frames when the screen changes, so nothing at rest
 custom-shader-animation = false
 
-confirm-close-surface = false
+confirm-close-surface = true
 window-save-state = always
 
 # via a login shell: otherwise the server inherits macOS apps' minimal PATH
-# (without /opt/homebrew/bin) and plugin scripts fail with 127
-command = /bin/zsh -lc "exec /Users/mirkobozzetto/.config/mux"
+command = /bin/zsh -lc "exec /Users/jordanbastin/.config/mux"
 
-# tmux, Ctrl+Space prefix (NUL byte): Cmd shortcuts send it for you,
-# you never type the prefix yourself
-keybind = cmd+d=text:\x00|
-keybind = cmd+shift+d=text:\x00-
-keybind = cmd+shift+z=text:\x00z
-keybind = cmd+shift+enter=text:\x00z
-keybind = cmd+shift+w=text:\x00x
-keybind = cmd+t=text:\x00c
-keybind = cmd+p=text:\x00o
-# open a real file mentioned in this pane, in nvim (prefix+O, capital)
-keybind = cmd+o=text:\x00O
-# agent monitor popup (prefix+e)
-keybind = cmd+shift+b=text:\x00e
-# jump to next agent needing you (prefix+g)
-keybind = cmd+shift+g=text:\x00g
-keybind = cmd+shift+p=text:\x00s
-# tabs: Cmd+Shift+arrows (Ctrl+Tab conflicts with macOS screenshot capture)
-keybind = cmd+shift+left=text:\x00p
-keybind = cmd+shift+right=text:\x00n
-keybind = ctrl+tab=text:\x00n
-keybind = ctrl+shift+tab=text:\x00p
+# Prefix is Ctrl+B (\x02), not Ctrl+Space. Grok Build uses Ctrl+Space for voice.
+# Cmd shortcuts send the prefix for you; you never type it.
+keybind = cmd+d=text:\x02|
+keybind = cmd+shift+h=text:\x02\x5c
+keybind = cmd+shift+d=text:\x02-
+keybind = cmd+shift+z=text:\x02z
+keybind = cmd+shift+w=text:\x02x
+keybind = cmd+t=text:\x02c
+keybind = cmd+p=text:\x02o
+keybind = cmd+o=text:\x02O
+keybind = cmd+shift+b=text:\x02e
+keybind = cmd+shift+g=text:\x02g
+keybind = cmd+shift+p=text:\x02s
+keybind = cmd+shift+left=text:\x02p
+keybind = cmd+shift+right=text:\x02n
+keybind = ctrl+tab=text:\x02n
+keybind = ctrl+shift+tab=text:\x02p
+keybind = alt+tab=text:\x02)
+keybind = alt+shift+tab=text:\x02(
+keybind = alt+grave_accent=text:\x02\x7f
+keybind = cmd+alt+left=text:\x02h
+keybind = cmd+alt+right=text:\x02l
+keybind = cmd+alt+up=text:\x02k
+keybind = cmd+alt+down=text:\x02j
+keybind = cmd+ctrl+left=text:\x02H
+keybind = cmd+ctrl+right=text:\x02L
+keybind = cmd+ctrl+up=text:\x02K
+keybind = cmd+ctrl+down=text:\x02J
+keybind = cmd+alt+one=text:\x021
+keybind = cmd+alt+two=text:\x022
+keybind = cmd+alt+three=text:\x023
+keybind = cmd+alt+four=text:\x024
+keybind = cmd+alt+five=text:\x025
 
-# sessions: hold Option and tap Tab to walk through them. A terminal never
-# reports key release, so there is no held-open switcher like Cmd+Tab -
-# each tap simply switches. Option+` returns to the one you came from.
-keybind = alt+tab=text:\x00)
-keybind = alt+shift+tab=text:\x00(
-keybind = alt+grave_accent=text:\x00\x7f
+# Grok: Cmd+A selects the prompt; Shift+Enter is a newline in the composer
+keybind = cmd+a=unbind
+keybind = shift+enter=text:\n
 
-# panes: moving between them
-keybind = cmd+alt+left=text:\x00h
-keybind = cmd+alt+right=text:\x00l
-keybind = cmd+alt+up=text:\x00k
-keybind = cmd+alt+down=text:\x00j
-
-# panes: resizing
-keybind = cmd+ctrl+left=text:\x00H
-keybind = cmd+ctrl+right=text:\x00L
-keybind = cmd+ctrl+up=text:\x00K
-keybind = cmd+ctrl+down=text:\x00J
-keybind = cmd+alt+one=text:\x001
-keybind = cmd+alt+two=text:\x002
-keybind = cmd+alt+three=text:\x003
-keybind = cmd+alt+four=text:\x004
-keybind = cmd+alt+five=text:\x005
-
-# Cmd+Enter encodes kitty-style (super = bit 8): nvim decodes it as <D-CR>
-keybind = cmd+enter=text:\x1b[13;9u
-# Cmd+S reuses the Ctrl+S byte rather than a kitty-encoded <D-s>: tmux does not
-# forward the kitty keyboard protocol reliably, so <D-s> never reached Neovim.
-keybind = cmd+shift+s=text:\x13
-
-# macOS reflexes for moving within the line
 keybind = cmd+left=text:\x01
 keybind = cmd+right=text:\x05
 keybind = cmd+backspace=text:\x15
-keybind = shift+enter=text:\x1b\r
