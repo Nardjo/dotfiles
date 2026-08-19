@@ -124,7 +124,9 @@ not exist.
 |---|---|
 | `Cmd+P` | session picker (sesh + projects + home) |
 | `Cmd+Shift+P` | native tmux session tree |
-| `Cmd+D` | split pane |
+| `Cmd+D` | split pane right |
+| `Cmd+Shift+H` | split pane left |
+| `Cmd+Shift+D` | split pane down |
 | `Cmd+Shift+B` | toggle the agent sidebar |
 | `Cmd+Shift+G` | jump to the next agent waiting on you |
 | `Cmd+Shift+,` | reload the Ghostty config |
@@ -136,7 +138,7 @@ not exist.
 | `Space` | searchable list of every binding |
 | `o` | sesh picker |
 | `s` | session tree |
-| `\|` `-` | split right / down |
+| `\|` `\` `-` | split right / left / down |
 | `h j k l` | move between panes |
 | `x` `X` | kill pane / window |
 | `H J K L` | resize (repeatable) |

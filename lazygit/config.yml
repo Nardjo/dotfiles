@@ -1,8 +1,8 @@
 git:
-  pagers:
+  diffRenderers:
     - # lazygit ignores core.pager: without this the diff is plain git output,
       # colored by +/- only, no syntax highlighting.
       colorArg: always
       # wrapper, not delta itself: it picks the syntax theme from the current
       # light/dark appearance so diffs stay readable either way
-      pager: ~/.config/delta/delta-auto --paging=never
+      command: ~/.config/delta/delta-auto --paging=never

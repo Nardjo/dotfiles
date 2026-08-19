@@ -10,8 +10,14 @@
 # would need the multiplexer's own keybinding instead of a global shortcut.
 
 STATE="$HOME/.config/mux.state"
-TMUX_BIN=/opt/homebrew/bin/tmux
-HERDR_BIN=/opt/homebrew/bin/herdr
+TMUX_BIN="${TMUX_BIN:-/opt/homebrew/bin/tmux}"
+if [ -x /opt/homebrew/bin/herdr ]; then
+  HERDR_BIN=/opt/homebrew/bin/herdr
+elif [ -x "$HOME/.local/bin/herdr" ]; then
+  HERDR_BIN="$HOME/.local/bin/herdr"
+else
+  HERDR_BIN="$(command -v herdr 2>/dev/null || true)"
+fi
 
 current() {
   [ -r "$STATE" ] && cat "$STATE" || echo tmux
