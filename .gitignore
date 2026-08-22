@@ -24,7 +24,3 @@ trace.md
 
 # Zed recreates this empty prompt database on launch; it only ever churns
 zed/prompts/
-branch_structure.json
-temp_auto_push.bat
-temp_interactive_push.bat
-.gitignore
