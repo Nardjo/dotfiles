@@ -1,9 +1,19 @@
 # Single config. The one in Application Support is emptied out: Ghostty was
 # loading both and the second one silently won.
 
-# two themes: Ghostty follows the macOS appearance and, through mode 2031,
-# tells tmux and Neovim to switch with it.
-theme = light:Catppuccin Latte,dark:Catppuccin Mocha
+# GrokDay / GrokNight: Ghostty follows the macOS appearance and, through
+# mode 2031, tells tmux to switch with it. Palettes match Grok Build TUI.
+theme = light:GrokDay,dark:GrokNight
+# After `theme =` so this wins over GrokDay/GrokNight selection-*.
+# Gold highlighter, dark ink. Not gray: GrokDay logs are already gray.
+selection-foreground = #1a1a1a
+selection-background = #f3e07a
+# Herdr spaces/tabs/sidebar need mouse reports. Shift+drag still uses the
+# gold Ghostty selection (mouse-shift-capture = never). Cmd+Shift+M toggles
+# reporting off if Grok swallows a plain drag.
+mouse-reporting = true
+mouse-shift-capture = never
+keybind = cmd+shift+m=toggle_mouse_reporting
 font-family = MesloLGL Nerd Font
 font-size = 16
 font-feature = calt
@@ -35,7 +45,7 @@ confirm-close-surface = true
 window-save-state = always
 
 # via a login shell: otherwise the server inherits macOS apps' minimal PATH
-command = /bin/zsh -lc "exec /Users/jordanbastin/.config/mux"
+command = /bin/zsh -lc "exec /Users/nardjo/.config/mux"
 
 # Prefix is Ctrl+B (\x02), not Ctrl+Space. Grok Build uses Ctrl+Space for voice.
 # Cmd shortcuts send the prefix for you; you never type it.
@@ -47,7 +57,9 @@ keybind = cmd+shift+w=text:\x02x
 keybind = cmd+t=text:\x02c
 keybind = cmd+p=text:\x02o
 keybind = cmd+o=text:\x02O
-keybind = cmd+shift+b=text:\x02e
+# Cmd+Shift+B: herdr file tree + git (prefix+Shift+B). Agent sidebar is Cmd+E.
+keybind = cmd+shift+b=text:\x02B
+keybind = cmd+e=text:\x02e
 keybind = cmd+shift+g=text:\x02g
 keybind = cmd+shift+p=text:\x02s
 keybind = cmd+shift+left=text:\x02p
@@ -65,11 +77,26 @@ keybind = cmd+ctrl+left=text:\x02H
 keybind = cmd+ctrl+right=text:\x02L
 keybind = cmd+ctrl+up=text:\x02K
 keybind = cmd+ctrl+down=text:\x02J
-keybind = cmd+alt+one=text:\x021
-keybind = cmd+alt+two=text:\x022
-keybind = cmd+alt+three=text:\x023
-keybind = cmd+alt+four=text:\x024
-keybind = cmd+alt+five=text:\x025
+# Ghostty default is super+1 = goto_tab (its own tabs, unused here).
+# digit_N is the physical number row: required on AZERTY where 1 is Shift+&.
+keybind = cmd+1=text:\x021
+keybind = cmd+2=text:\x022
+keybind = cmd+3=text:\x023
+keybind = cmd+4=text:\x024
+keybind = cmd+5=text:\x025
+keybind = cmd+6=text:\x026
+keybind = cmd+7=text:\x027
+keybind = cmd+8=text:\x028
+keybind = cmd+9=text:\x029
+keybind = cmd+digit_1=text:\x021
+keybind = cmd+digit_2=text:\x022
+keybind = cmd+digit_3=text:\x023
+keybind = cmd+digit_4=text:\x024
+keybind = cmd+digit_5=text:\x025
+keybind = cmd+digit_6=text:\x026
+keybind = cmd+digit_7=text:\x027
+keybind = cmd+digit_8=text:\x028
+keybind = cmd+digit_9=text:\x029
 
 # Grok: Cmd+A selects the prompt; Shift+Enter is a newline in the composer
 keybind = cmd+a=unbind

@@ -1,0 +1,26 @@
+# GrokDay — same RGB as Grok Build 1.0.5 light theme (binary palette).
+# Background #f5f5f5 and accent #7d4bc6 are the TUI slots; ANSI mapped from
+# the same table so shell, tmux, and Grok share one surface.
+
+palette = 0=#444444
+palette = 1=#cd3048
+palette = 2=#378e23
+palette = 3=#a27612
+palette = 4=#2f64d2
+palette = 5=#7d4bc6
+palette = 6=#0f87a2
+palette = 7=#eaeaea
+palette = 8=#767676
+palette = 9=#cd3048
+palette = 10=#4caf50
+palette = 11=#c3691e
+palette = 12=#2f64d2
+palette = 13=#6c3eb2
+palette = 14=#0a8e70
+palette = 15=#b2b2b2
+background = #f5f5f5
+foreground = #262626
+cursor-color = #7d4bc6
+cursor-text = #f5f5f5
+selection-background = #f3e07a
+selection-foreground = #1a1a1a

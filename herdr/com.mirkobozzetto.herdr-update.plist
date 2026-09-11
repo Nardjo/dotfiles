@@ -35,8 +35,8 @@
   <false/>
 
   <key>StandardOutPath</key>
-  <string>/Users/mirkobozzetto/Library/Logs/herdr-update.log</string>
+  <string>/Users/nardjo/Library/Logs/herdr-update.log</string>
   <key>StandardErrorPath</key>
-  <string>/Users/mirkobozzetto/Library/Logs/herdr-update.log</string>
+  <string>/Users/nardjo/Library/Logs/herdr-update.log</string>
 </dict>
 </plist>

@@ -6,22 +6,15 @@ onboarding = false
 [ui.sound]
 enabled = false
 
-# what theme-apply.sh and the client-dark-theme hooks do under tmux: the
-# palette follows the macOS appearance Ghostty reports, with no poller
-# tokyo-night is the palette the herdr-sidebar screenshots are shot in: darker
-# ground, brighter blues on the entries, so the sidebar reads at a glance. The
-# tmux bar stays Catppuccin; the two only meet when you switch multiplexer.
+# Dark: `terminal` follows Ghostty GrokNight (#0a0a0a), same paper as Grok CLI.
+# Light: never `terminal`. GrokDay's ANSI white is #eaeaea on #f5f5f5, so
+# Herdr paints spaces/agents and selection with no contrast. tokyo-night-day
+# is a real light palette (dark text, visible rows, non-gray selection).
 [theme]
-name = "tokyo-night"
+name = "tokyo-night-day"
 auto_switch = true
-dark_name = "tokyo-night"
+dark_name = "terminal"
 light_name = "tokyo-night-day"
-
-# No override on purpose: the sidebar is transparent by design and only paints
-# highlighted rows, so no background token separates the spaces and agents
-# sections (herdr discussion #1952, prototyped, unreleased, absent from the
-# preview channel too). Hardcoded Catppuccin hexes on top of another theme only
-# produced a mismatch. Judge the theme on its own palette first.
 
 # the @resurrect-capture-pane-contents equivalent: scrollback comes back after
 # a server restart. Pane output lands in session-history.json, so treat that

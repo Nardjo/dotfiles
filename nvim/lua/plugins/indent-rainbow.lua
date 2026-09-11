@@ -3,9 +3,9 @@
 -- The eye then reads depth from hue and position from brightness, instead of
 -- eight saturated lines all shouting at once.
 --
--- Colours come from the active Catppuccin palette, so latte and mocha each get
+-- Colours come from the active Grok palette, so GrokDay and GrokNight each get
 -- their own without a second table to maintain.
-local hues = { "red", "peach", "yellow", "green", "teal", "blue", "mauve", "pink" }
+local hues = { "red", "orange", "yellow", "green", "teal", "blue", "accent", "accent2" }
 
 -- how much of the hue survives against the background for the passive guides
 local FADED = 0.28
@@ -26,15 +26,12 @@ local function blend(fg, bg, amount)
 end
 
 local function paint()
-  local ok, palettes = pcall(require, "catppuccin.palettes")
+  local ok, palettes = pcall(require, "grok.palette")
   if not ok then
     return
   end
-  local colors = palettes.get_palette()
-  if not colors then
-    return
-  end
-  local bg = tonumber(colors.base:sub(2), 16)
+  local colors = palettes.current()
+  local bg = tonumber(colors.bg:sub(2), 16)
   for i, hue in ipairs(hues) do
     local fg = tonumber(colors[hue]:sub(2), 16)
     -- nocombine: without it the guide blends with whatever it overlays

@@ -1,0 +1,26 @@
+# GrokNight — same RGB as Grok Build 1.0.5 dark theme (binary palette).
+# Background #0a0a0a and magenta #bb9af7 are the TUI slots; ANSI mapped from
+# the same table so shell, tmux, and Grok share one surface.
+
+palette = 0=#111111
+palette = 1=#f7768e
+palette = 2=#9ece6a
+palette = 3=#e0af68
+palette = 4=#7aa2f7
+palette = 5=#bb9af7
+palette = 6=#3a95ab
+palette = 7=#c8c8c8
+palette = 8=#6c6c6c
+palette = 9=#f7768e
+palette = 10=#8bc34a
+palette = 11=#ffdb8d
+palette = 12=#7aa2f7
+palette = 13=#9d7cd8
+palette = 14=#1abc9c
+palette = 15=#e1e1e1
+background = #0a0a0a
+foreground = #e1e1e1
+cursor-color = #bb9af7
+cursor-text = #0a0a0a
+selection-background = #f3e07a
+selection-foreground = #1a1a1a

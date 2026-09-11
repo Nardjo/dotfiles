@@ -19,6 +19,6 @@ for p in $(tmux list-panes -a -F '#{pane_id}' 2>/dev/null); do
 done
 
 out=""
-((waiting > 0)) && out+="#[fg=#f38ba8,bold]▲ ${waiting}#[default]"
-((running > 0)) && out+="${out:+  }#[fg=#f9e2af]▶ ${running}#[default]"
+((waiting > 0)) && out+="#[fg=#f7768e,bold]▲ ${waiting}#[default]"
+((running > 0)) && out+="${out:+  }#[fg=#e0af68]▶ ${running}#[default]"
 printf '%s' "$out"
